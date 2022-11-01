@@ -16,7 +16,7 @@ def WIFI_Connect():
 
     if not wlan.isconnected():
         print('connecting to network...')
-        wlan.connect('TP-LINK_8C68E0', 'TL-MR12U') #输入WIFI账号密码
+        wlan.connect('TP-LINK', '') #输入WIFI账号密码
 
         while not wlan.isconnected():
 
