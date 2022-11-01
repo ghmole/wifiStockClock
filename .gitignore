@@ -1,0 +1,6 @@
+code/afterpull.sh
+code/afterpull2.sh
+code/beforepush.sh
+code/data/config/wifilist-bak.cfg
+code/data/config/wifilist-bak2.cfg
+code/data/config/wifilist-fake.cfg

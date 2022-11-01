@@ -1,8 +1,9 @@
 from libs.urllib import urequest
+
 import gc
 
 # 导入工具类
-from lib.bean.stock_bean import * # 股票数据模板
+
 
 class StockData():
     def __init__(self):
@@ -13,22 +14,26 @@ class StockData():
         self.open_price = ''
         self.diff_price = ''
         self.diff_percent = ''
+    
+    
  
 class StockService():
     __log = None
-    __stockdata = None
+    __stock_data = None
+    __stock_bean = None
     
     def __init__(self, log):
         self.__log = log
-        self.__stockdata=StockData()
+        self.__stock_data = StockData()
+ 
         
-    def query_stock_list(self,code_list, stock_bean):
-        for i,code in enumerate(code_list):
-            self.__log.info('get stock code:' + code)
-            self.__stockdata=slef.query_stock(code)
-            stock_bean.update_stock_data(i, self.__stockdata)
+#     def query_stock_list(self,code_list):
+#         for i,code in enumerate(code_list):
+#             self.__log.info('get stock code:' + code)
+#             self.__stock_data=slef.query_stock(code)
+#             self.__stock_bean.update_stock_data(i, self.__stock_data)
         
-    def query_stock(self,code):
+    def query_stock(self, code):
         gc.collect()
         try:
             my_url='http://qt.gtimg.cn/r=0.9392363841179758&q='+code
@@ -53,13 +58,15 @@ class StockService():
                 vargs = info.split('~')
                 print(vargs)
                 #print vargs
-                self.__stockdata.stock_name = vargs[1]
-                self.__stockdata.stock_code = vargs[2]
-                self.__stockdata.last_price =  vargs[3]
-                self.__stockdata.pre_close =  vargs[4]
-                self.__stockdata.open_price =  vargs[5]
-                self.__stockdata.diff_price =  str(int((float(vargs[3])-float(vargs[4]))*100)/100)
-                self.__stockdata.diff_percent = str(int((float(vargs[3])-float(vargs[4]))/float(vargs[4])*10000+0.5)/100)                
+                self.__stock_data.stock_name = vargs[1]
+                self.__stock_data.stock_code = vargs[2]
+                self.__stock_data.last_price =  vargs[3]
+                self.__stock_data.pre_close =  vargs[4]
+                self.__stock_data.open_price =  vargs[5]
+                self.__stock_data.diff_price =  str(int((float(vargs[3])-float(vargs[4]))*100)/100)
+                self.__stock_data.diff_percent = str(int((float(vargs[3])-float(vargs[4]))/float(vargs[4])*10000+0.5)/100)
+                         
+ 
  
         except Exception as ex:
             self.__log.error("Can not get stock!"+code)
@@ -72,11 +79,10 @@ class StockService():
          
 
     def get_stock_data(self):
-        return self.__stockdata
+        return self.__stock_data
      
-   
-
  
+     
     
 # print(dir())       
 # #执行WIFI连接函数

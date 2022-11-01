@@ -2,7 +2,7 @@
 from machine import Pin, WDT, reset
 import time, gc, machine
 import os 
-from lib.service.stockservice import  StockData                 # 股票 
+from lib.bean.stock_bean import * # 股票数据模板
 
 
 class PyClock:
@@ -40,7 +40,9 @@ class PyClock:
     
     __fail_num_list = [0, 0] # 获取数据连续失败的次数。分别记录天气和预警的连续失败次数。
     
-    __stocklist=['sh000001','sz399001','sz399006']
+    __stock_list=['sh000001','sz399001','sz399006']
+    __stock_bean=None
+    __max_stock_num = 12
     __stock_num = 3
     __stock_page = 1
     
@@ -76,7 +78,11 @@ class PyClock:
         self.__clock_weather_win_xp_ui = clock_weather_win_xp_ui
         self.__clock_stock_ui = clock_stock_ui
         
-        
+        self.__stock_bean = StockBean()
+        # 3 个指数
+        self.__stock_bean.add_stock_data(StockData())
+        self.__stock_bean.add_stock_data(StockData())
+        self.__stock_bean.add_stock_data(StockData())
         
         # 关闭 LED灯
         self.__led.turn_off()
@@ -111,13 +117,14 @@ class PyClock:
                 # 删除换行
                 stockcode=stockcode.replace('\n','')
                 # 如果不在列表里面，则添加
-                if not stockcode in self.__stocklist:
-                    self.__stocklist.append(stockcode)
+                if not stockcode in self.__stock_list:
+                    self.__stock_list.append(stockcode)
+                    self.__stock_bean.add_stock_data(StockData())
                 # 读下一行   
                 stockcode = f.readline()
 
             f.close()
-            self.__stock_num = len(self.__stocklist)
+            self.__stock_num = len(self.__stock_list)
             self.__stock_page = int((self.__stock_num+2)/3)  
       
     '按键的回调函数'
@@ -227,6 +234,8 @@ class PyClock:
                 datetime2[2] = 10
                 datetime = datetime2
                 '''
+                # 秒
+                second = datetime[6]
                 
                 # 获取数据
                 # winxp+weatherclock UI: 每10分钟获取一次 天气数据和预警信息
@@ -254,9 +263,21 @@ class PyClock:
                         
                         self.__last_get_upgrade_hour = hour
                         
+                elif (self.__ui_index == 2):        # stock ui
+                    self.__log.info('stock_ui.get_stock_data() ') 
+                    current_stock_index=int((second+4)/5)%12
+                    if current_stock_index < len(self.__stock_list) \
+                       and second % 5 ==0:
+                        current_stock_code = self.__stock_list[current_stock_index]
+                        self.__log.info('stock_service.query_stock', current_stock_code)
+                        self.__stock_service.query_stock(current_stock_code)
+                        stockdata=self.__stock_service.get_stock_data()
+                        self.__stock_bean.update_stock_data(current_stock_index,stockdata)
+                        
+                        
                       
                 # 刷新UI数据
-                second = datetime[6]
+                
                 if (self.__last_refresh_ui_second != second): # 每秒刷新一次
                     
                     # 检测数据的状态
@@ -279,7 +300,8 @@ class PyClock:
                     elif (self.__ui_index == 1):
                         self.__clock_weather_ui.refresh(datetime, weatherBean, weatherWarn, calendarBean)
                     elif (self.__ui_index == 2):
-                        #self.__clock_stock_ui.refresh(datetime, weatherBean, weatherWarn, calendarBean)
+                        
+                        self.__clock_stock_ui.refresh(datetime, self.__stock_bean)
                         pass
                     
                     

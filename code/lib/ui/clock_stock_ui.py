@@ -1,6 +1,6 @@
 # 导入工具类
 import gc
-
+#from lib.bean.stock_bean import StockBean 
 
 class ClockStockUI():
     __log    = None
@@ -30,6 +30,33 @@ class ClockStockUI():
         self.background()
         
     '刷新界面信息'
-    def refresh(self, datetime,  stock_bean):
+    def refresh(self, datetime, stockBean):
         gc.collect()
-        
+        self.__log.info('stock_ui.refresh():')
+        stock_num=stockBean.get_stock_num()
+        self.__log.info('stock_ui.refresh(): stock_num=', stock_num)
+        max_stock_page = int((stock_num+2)/3)
+        self.__log.info('stock_ui.refresh(): max_stock_page=', max_stock_page)
+        second=datetime[6]
+        self.__log.info('stock_ui.refresh(): second=', second)
+        if second % 15==1:
+            self.__log.info('stock_ui.refresh(): meet second=1 ')
+            current_page = int(second/15)%4
+            self.__log.info('stock_ui.refresh(): current_page=', current_page)
+            if current_page<=max_stock_page:
+                for i in range(3):
+                    self.__log.info('stock_ui.refresh(): i=', i)
+                    if current_page*3+i < stock_num:
+                        self.__log.info('stock_ui.refresh(): i=', i)
+                        data= stockBean.get_stock_data(current_page*3+i)
+                        self.__screen.print_str(data.stock_code, 10, 36+i*70, \
+                                                color=self.__color.WHITE, \
+                                                backcolor=self.__color.CL_YANZHONG,size=3)
+                        self.__screen.print_str(data.diff_price, 155, 40+i*70, \
+                                                color=self.__color.RED, \
+                                                backcolor=self.__color.CL_YANZHONG,size=2)
+                        self.__screen.print_str(data.diff_percent(), 170, 72+i*70, \
+                                                color=self.__color.GREEN, \
+                                                backcolor=self.__color.CL_YANZHONG,size=1)
+                        
+            

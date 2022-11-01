@@ -1,25 +1,33 @@
 from lib.service.stockservice import StockData
 
+
 class StockBean():
     __stock_data = []
     __max_num = 12
     __stock_num = 0
     
     def __init__(self):
-        for i in range(self.__max_num):
-            self.__stock_data.add(StockData())
-            
+        pass
+#         for i in range(self.__max_num):
+#             self.__stock_data.append(None)
+    
+    def add_stock_data(self,stockdata):
+        if self.__stock_num+1 >= self.__max_num:
+            raise ValueError("__stock_num : exceed max stock bean size!")
+        else:
+            self.__stock_data.append(stockdata)
+            self.__stock_num +=1
             
     def update_stock_data(self,index, stockdata):
         if index >=self.__max_num or \
            self.__stock_num >= self.__max_num or \
            self.__stock_num==0:
-             raise ValueError("index :" + str(index) + " exceed max stock index!")
+            raise ValueError("index :" + str(index) + " exceed max stock index!")
         else:
             if stockdata is not None:
                 self.__stock_data[index] = stockdata
                 self.__stock_num += 1
-            else
+            else:
                 del self.__stock_data[index]
                 self.__stock_num -= 1
         
