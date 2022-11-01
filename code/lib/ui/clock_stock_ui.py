@@ -55,7 +55,7 @@ class ClockStockUI():
                         self.__screen.print_str(data.diff_price, 155, 40+i*70, \
                                                 color=self.__color.RED, \
                                                 backcolor=self.__color.CL_YANZHONG,size=2)
-                        self.__screen.print_str(data.diff_percent(), 170, 72+i*70, \
+                        self.__screen.print_str(data.diff_percent, 170, 72+i*70, \
                                                 color=self.__color.GREEN, \
                                                 backcolor=self.__color.CL_YANZHONG,size=1)
                         
