@@ -29,7 +29,7 @@ class StockBean():
         else:
             return self.__stock_data[index]
         
-    def get_stock_numa(self):
+    def get_stock_num(self):
         return self.__stock_num
         
     def clean_data(self):
