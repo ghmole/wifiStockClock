@@ -26,7 +26,6 @@ class StockBean():
         else:
             if stockdata is not None:
                 self.__stock_data[index] = stockdata
-                self.__stock_num += 1
             else:
                 del self.__stock_data[index]
                 self.__stock_num -= 1

@@ -185,7 +185,7 @@ class PyClock:
         
     '喂看门狗'
     def __feed_wdt(self):
-        self.__log.info("PyClock.__feed_wdt")
+        #self.__log.info("PyClock.__feed_wdt")
         
         if (self.__is_use_wdt):
             self.__wdt.feed()
@@ -264,14 +264,18 @@ class PyClock:
                         self.__last_get_upgrade_hour = hour
                         
                 elif (self.__ui_index == 2):        # stock ui
-                    self.__log.info('stock_ui.get_stock_data() ') 
+                    #self.__log.info('stock_ui.get_stock_data() ') 
                     current_stock_index=int((second+4)/5)%12
+                    current_stock_code = self.__stock_list[current_stock_index]
                     if current_stock_index < len(self.__stock_list) \
                        and second % 5 ==0:
-                        current_stock_code = self.__stock_list[current_stock_index]
-                        self.__log.info('stock_service.query_stock', current_stock_code)
+                        self.__log.info('py_clock.get_stock_data() current_stock_index=',current_stock_index)
+                        self.__log.info('py_clock.get_stock_data() second=',second)
+                        
+                        self.__log.info('py_clock.query_stock():', current_stock_code)
                         self.__stock_service.query_stock(current_stock_code)
                         stockdata=self.__stock_service.get_stock_data()
+                        self.__log.info('update stock_bean: index=', current_stock_index, ' stockdata=',stockdata)
                         self.__stock_bean.update_stock_data(current_stock_index,stockdata)
                         
                         
