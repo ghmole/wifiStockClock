@@ -45,6 +45,7 @@ class PyClock:
     __max_stock_num = 12
     __stock_num = 3
     __stock_page = 1
+    __stock_update_index = 0
     
     
     __last_refresh_ui_second = 61   # 上次 刷新界面的秒数
@@ -78,11 +79,11 @@ class PyClock:
         self.__clock_weather_win_xp_ui = clock_weather_win_xp_ui
         self.__clock_stock_ui = clock_stock_ui
         
-        self.__stock_bean = StockBean()
+        self.__stock_bean = StockBean(log)
         # 3 个指数
-        self.__stock_bean.add_stock_data(StockData())
-        self.__stock_bean.add_stock_data(StockData())
-        self.__stock_bean.add_stock_data(StockData())
+        self.__stock_bean.add_stock_data(StockData(0))
+        self.__stock_bean.add_stock_data(StockData(1))
+        self.__stock_bean.add_stock_data(StockData(2))
         
         # 关闭 LED灯
         self.__led.turn_off()
@@ -97,7 +98,8 @@ class PyClock:
         if (self.__is_use_wdt):
             self.__wdt = WDT(timeout = 60 * 1000) # 看门狗超时时间：60秒
     
-        self.read_stock_list()
+        
+        
         
         gc.collect()
     
@@ -111,6 +113,7 @@ class PyClock:
             
             # 读一行
             stockcode = f.readline()
+            cnt=3
             while (stockcode):
                 # 测试
                 #print(stockcode.replace('\n',''),stockcode.encode('gbk'))
@@ -119,15 +122,27 @@ class PyClock:
                 # 如果不在列表里面，则添加
                 if not stockcode in self.__stock_list:
                     self.__stock_list.append(stockcode)
-                    self.__stock_bean.add_stock_data(StockData())
+                    self.__stock_bean.add_stock_data(StockData(cnt))
                 # 读下一行   
                 stockcode = f.readline()
-
+                cnt+=1
             f.close()
             self.__stock_num = len(self.__stock_list)
-            self.__stock_page = int((self.__stock_num+2)/3)  
+            self.__stock_page = int((self.__stock_num+2)/3)
+            self.__log.info('read_stock_list():  stock_list len=', len(self.__stock_list))
+            self.__log.info('read_stock_list():  stock_num=',self.__stock_num)
+            self.__log.info('read_stock_list():  stock_page=',self.__stock_page)
+             
+     # 初始化股票代码
+    def init_stock_bean(self):
+        for index,stockcode in enumerate(self.__stock_list):
+            self.__stock_service.query_stock(stockcode)
+            d=self.__stock_service.get_stock_data()
+            
+            self.__stock_bean.update_stock_data(index,d)
+            self.__feed_wdt()
       
-    '按键的回调函数'
+    # 按键的回调函数
     def __key_handler(self, key):
         time.sleep_ms(10) # 消除按键抖动
         
@@ -198,11 +213,16 @@ class PyClock:
         self.__wifi.multi_wifi_connect()
         self.__feed_wdt()
  
-        
         # 更新时间
         self.__time_service.update_ntp_time() # 更新机器的时间为网络时间
         self.__feed_wdt()
         
+        # 读股票列表
+        self.read_stock_list()
+        
+        # 初始化股票数据
+        self.init_stock_bean()
+        self.__stock_bean.check_bean_data()
         
         while True:
             try:
@@ -212,6 +232,7 @@ class PyClock:
                     if (self.__ui_index == -1):
                         self.__ui_index = self.__get_init_ui_index()                            
                     
+                    self.__log.info('ui_index:', self.__ui_index)
                     # 界面初始化（获取数据之前）
                     if (self.__ui_index == 0):
                         self.__screen.picture(0, 0, "/data/picture/winxp/desktop.jpg")
@@ -264,20 +285,26 @@ class PyClock:
                         self.__last_get_upgrade_hour = hour
                         
                 elif (self.__ui_index == 2):        # stock ui
-                    #self.__log.info('stock_ui.get_stock_data() ') 
-                    current_stock_index=int((second+4)/5)%12
-                    current_stock_code = self.__stock_list[current_stock_index]
-                    if current_stock_index < len(self.__stock_list) \
-                       and second % 5 ==0:
-                        self.__log.info('py_clock.get_stock_data() current_stock_index=',current_stock_index)
-                        self.__log.info('py_clock.get_stock_data() second=',second)
+                    #self.__log.info('PyClock.get_stock_data()')
+                    if second!=self.__last_refresh_ui_second:
+                        #self.__log.info('PyClock.get_stock_data() second=',second)
+                        current_stock_index=int((second+4)/5) % 12
+                        #self.__log.info('PyClock.get_stock_data() current_stock_index=',current_stock_index,\
+                        #                '   stock_update_index=',self.__stock_update_index)
                         
-                        self.__log.info('py_clock.query_stock():', current_stock_code)
-                        self.__stock_service.query_stock(current_stock_code)
-                        stockdata=self.__stock_service.get_stock_data()
-                        self.__log.info('update stock_bean: index=', current_stock_index, ' stockdata=',stockdata)
-                        self.__stock_bean.update_stock_data(current_stock_index,stockdata)
-                        
+                        if current_stock_index < len(self.__stock_list) \
+                           and second % 5 ==0 and self.__stock_update_index==current_stock_index:
+                            
+                            current_stock_code = self.__stock_list[current_stock_index]
+                            self.__log.info('PyClock.query_stock() code=:', current_stock_code)
+                            self.__stock_service.query_stock(current_stock_code)
+                            time.sleep_ms(300) 
+                            stockdata=self.__stock_service.get_stock_data()
+                            self.__log.info('PyClock update stock_bean  index=', current_stock_index )
+                            self.__stock_bean.update_stock_data(current_stock_index,stockdata)
+                            self.__log.info('PyClock line 303')
+                            self.__stock_update_index= (self.__stock_update_index+1) % self.__stock_num
+                            self.__stock_bean.check_bean_data()
                         
                       
                 # 刷新UI数据

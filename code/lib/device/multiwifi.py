@@ -118,7 +118,7 @@ class MultiWifi:
                     return True
         else:
     #         print(dir(wlan))
-            #self.__screen.picture(5,5,"/data/picture/wifi.jpg")
+            self.__screen.picture(5,5,"/data/picture/wifi.jpg")
             self.__log.info('connected AP:'+wlan.config('essid'))
             #显示IP信息
             #self.__screen.print_str('connected AP:',10,50,color=(255,255,255),backcolor=None,size=2)

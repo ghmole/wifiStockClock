@@ -6,25 +6,27 @@ import gc
 
 
 class StockData():
-    def __init__(self):
-        self.stock_name = ''
-        self.stock_code = ''
-        self.last_price = ''
-        self.pre_close = ''
-        self.open_price = ''
-        self.diff_price = ''
-        self.diff_percent = ''
-    
+    uid=0
+    stock_name = ''
+    stock_code = ''
+    last_price = ''
+    pre_close = ''
+    open_price = ''
+    diff_price = ''
+    diff_percent = ''
+    def __init__(self,uid):
+        self.uid=uid
+       
     
  
 class StockService():
     __log = None
     __stock_data = None
-    __stock_bean = None
+    #__stock_bean = None
     
     def __init__(self, log):
         self.__log = log
-        self.__stock_data = StockData()
+        self.__stock_data = StockData(0)
  
         
 #     def query_stock_list(self,code_list):
@@ -63,9 +65,13 @@ class StockService():
                 self.__stock_data.last_price =  vargs[3]
                 self.__stock_data.pre_close =  vargs[4]
                 self.__stock_data.open_price =  vargs[5]
-                self.__stock_data.diff_price =  str(int((float(vargs[3])-float(vargs[4]))*100)/100)
-                self.__stock_data.diff_percent = str(int((float(vargs[3])-float(vargs[4]))/float(vargs[4])*10000+0.5)/100)
-                         
+                if vargs[3]=='' or vargs[4]=='':
+                    self.__stock_data.diff_price=''
+                    self.__stock_data.diff_percent=''
+                else:
+                    self.__stock_data.diff_price =  str(int((float(vargs[3])-float(vargs[4]))*100)/100)
+                    self.__stock_data.diff_percent = str(int((float(vargs[3])-float(vargs[4]))/float(vargs[4])*10000+0.5)/100)
+                             
  
                 self.__log.info('stock_name: %s\n' % self.__stock_data.stock_name)
                 self.__log.info('stock_code: %s\n' % self.__stock_data.stock_code)

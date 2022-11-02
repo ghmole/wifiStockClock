@@ -55,9 +55,12 @@ class ClockStockUI():
                     
                         self.__log.info('stock_ui.refresh(): index=', stock_index)
                         data= stockBean.get_stock_data(stock_index)
+                        self.__log.info('stock_ui.refresh(): stock code=',data.stock_code)
                         self.__screen.print_str(data.stock_code, 10, 36+i*70, \
                                                 color=self.__color.WHITE, \
                                                 backcolor=None,size=3)
+                        self.__log.info('stock_ui.refresh(): diff_price=',data.diff_price)
+                        self.__log.info('stock_ui.refresh(): diff_percent=',data.diff_percent)
                         if float(data.diff_price)>0:
                             price_color=self.__color.RED
                         elif float(data.diff_price)<0:
