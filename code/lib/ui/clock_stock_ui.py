@@ -80,11 +80,11 @@ class ClockStockUI():
             self.__log.info('stock_ui.refresh(): max_stock_page=', max_stock_page)
             
             current_page = int(second/15)%4
-            self.__log.info('stock_ui.refresh(): current_page=', current_page)
+            self.__log.info('stock_ui.refresh(): current_page=', current_page+1)
             if current_page<=max_stock_page:
                 for i in range(3):
                     self.__log.info('stock_ui.refresh(): i=', i)
-                    stock_index=(current_page-1)*3+i
+                    stock_index=current_page*3+i
                     if stock_index < stock_num:
                     
                         self.__log.info('stock_ui.refresh(): index=', stock_index)
@@ -102,7 +102,7 @@ class ClockStockUI():
                         else:
                             price_color=self.__color.GAINSBORO
                             
-                        self.__screen.print_str(data.diff_price, 150, 40+i*70, \
+                        self.__screen.print_str(data.diff_price, 145, 40+i*70, \
                                                 color=price_color, \
                                                 backcolor=None,size=2)
                         self.__screen.print_str(data.diff_percent, 170, 72+i*70, \

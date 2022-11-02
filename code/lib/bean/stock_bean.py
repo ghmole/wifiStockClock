@@ -70,6 +70,7 @@ class StockBean():
         self.__log.info('StockBean.check_bean_data() ')
         for data in self.__stock_data:
             self.__log.info('-'*30)
+            self.__log.info('StockBean.check_bean_data(): stock.uid=', data.uid)
             self.__log.info('StockBean.check_bean_data(): stock.code=', data.stock_code)
             self.__log.info('StockBean.check_bean_data(): stock.lastprice=', data.last_price)
             self.__log.info('StockBean.check_bean_data(): stock.diff_price=', data.diff_price)

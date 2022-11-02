@@ -76,7 +76,10 @@ class StockService():
                     self.__stock_data.diff_price=''
                     self.__stock_data.diff_percent=''
                 else:
-                    vdiff=int((float(vargs[3])-float(vargs[4]))*100)/100
+                    if 'sh5' in code:
+                        vdiff=int((float(vargs[3])-float(vargs[4]))*1000)/1000
+                    else:
+                        vdiff=int((float(vargs[3])-float(vargs[4]))*100)/100
                     self.__log.info('vdiff : %f\n' % (vdiff))
                     self.__stock_data.diff_price =  self.pad_diff(vdiff)
                     vpercent=int((float(vargs[3])-float(vargs[4]))/float(vargs[4])*10000+0.5)/100
