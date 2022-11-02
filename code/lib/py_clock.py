@@ -97,9 +97,6 @@ class PyClock:
         # 配置 看门狗
         if (self.__is_use_wdt):
             self.__wdt = WDT(timeout = 60 * 1000) # 看门狗超时时间：60秒
-    
-        
-        
         
         gc.collect()
     
@@ -118,6 +115,7 @@ class PyClock:
                 # 测试
                 #print(stockcode.replace('\n',''),stockcode.encode('gbk'))
                 # 删除换行
+                stockcode=stockcode.replace('\r','')
                 stockcode=stockcode.replace('\n','')
                 # 如果不在列表里面，则添加
                 if not stockcode in self.__stock_list:
@@ -132,14 +130,18 @@ class PyClock:
             self.__log.info('read_stock_list():  stock_list len=', len(self.__stock_list))
             self.__log.info('read_stock_list():  stock_num=',self.__stock_num)
             self.__log.info('read_stock_list():  stock_page=',self.__stock_page)
+            self.__log.info('read_stock_list(): list=' , self.__stock_list)
              
      # 初始化股票代码
     def init_stock_bean(self):
         for index,stockcode in enumerate(self.__stock_list):
-            self.__stock_service.query_stock(stockcode)
-            d=self.__stock_service.get_stock_data()
+            if self.__stock_service.query_stock(stockcode):
+                time.sleep_ms(500)
+                d=self.__stock_service.get_stock_data()
             
-            self.__stock_bean.update_stock_data(index,d)
+                self.__stock_bean.update_stock_data(index,d)
+            gc.collect()
+            time.sleep_ms(500)
             self.__feed_wdt()
       
     # 按键的回调函数
@@ -297,13 +299,15 @@ class PyClock:
                             
                             current_stock_code = self.__stock_list[current_stock_index]
                             self.__log.info('PyClock.query_stock() code=:', current_stock_code)
-                            self.__stock_service.query_stock(current_stock_code)
-                            time.sleep_ms(300) 
-                            stockdata=self.__stock_service.get_stock_data()
-                            self.__log.info('PyClock update stock_bean  index=', current_stock_index )
-                            self.__stock_bean.update_stock_data(current_stock_index,stockdata)
-                            self.__log.info('PyClock line 303')
-                            self.__stock_update_index= (self.__stock_update_index+1) % self.__stock_num
+                            if self.__stock_service.query_stock(current_stock_code):
+                                time.sleep_ms(300) 
+                                stockdata=self.__stock_service.get_stock_data()
+                                time.sleep_ms(20) 
+                                self.__log.info('PyClock update stock_bean  index=', current_stock_index )
+                                self.__stock_bean.update_stock_data(current_stock_index,stockdata)
+                                
+                                self.__stock_update_index= (self.__stock_update_index+1) % self.__stock_num
+                                self.__log.info('PyClock update stock_bean  updat_index=', self.__stock_update_index )
                             self.__stock_bean.check_bean_data()
                         
                       

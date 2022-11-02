@@ -46,7 +46,7 @@ class StockBean():
                 d = StockData(0)
                 self.copy_stock_data(d,stockdata)
                 self.__stock_data[index] = d
-                self.__log.info('StockBean.update_stock_data(): stock_num=', self.__stock_num)
+                self.__log.info('StockBean.update_stock_data(): stock.uid=', d.uid)
                 self.__log.info('StockBean.update_stock_data(): stock.code=', stockdata.stock_code)
                 self.__log.info('StockBean.update_stock_data(): stock.lastprice=', stockdata.last_price)
                 self.__log.info('StockBean.update_stock_data(): stock.diff_price=', stockdata.diff_price)
