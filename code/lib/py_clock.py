@@ -136,12 +136,12 @@ class PyClock:
     def init_stock_bean(self):
         for index,stockcode in enumerate(self.__stock_list):
             if self.__stock_service.query_stock(stockcode):
-                time.sleep_ms(500)
+                time.sleep_ms(10)
                 d=self.__stock_service.get_stock_data()
             
                 self.__stock_bean.update_stock_data(index,d)
             gc.collect()
-            time.sleep_ms(500)
+            time.sleep_ms(10)
             self.__feed_wdt()
       
     # 按键的回调函数

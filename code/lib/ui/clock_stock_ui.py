@@ -95,23 +95,25 @@ class ClockStockUI():
                                                 backcolor=None,size=3)
                         self.__log.info('stock_ui.refresh(): diff_price=',data.diff_price)
                         self.__log.info('stock_ui.refresh(): diff_percent=',data.diff_percent)
-                        if float(data.diff_price)>0:
-                            price_color=self.__color.RED
-                        elif float(data.diff_price)<0:
-                            price_color=self.__color.GREEN
-                        else:
-                            price_color=self.__color.GAINSBORO
+                        
+                        if data.diff_price is not '':
+                            if float(data.diff_price)>0:
+                                price_color=self.__color.RED
+                            elif float(data.diff_price)<0:
+                                price_color=self.__color.GREEN
+                            else:
+                                price_color=self.__color.GAINSBORO
+                                
+                            self.__screen.print_str(data.diff_price, 145, 40+i*70, \
+                                                    color=price_color, \
+                                                    backcolor=None,size=2)
+                            self.__screen.print_str(data.diff_percent, 170, 72+i*70, \
+                                                    color=price_color, \
+                                                    backcolor=None,size=1)
                             
-                        self.__screen.print_str(data.diff_price, 145, 40+i*70, \
-                                                color=price_color, \
-                                                backcolor=None,size=2)
-                        self.__screen.print_str(data.diff_percent, 170, 72+i*70, \
-                                                color=price_color, \
-                                                backcolor=None,size=1)
-                        
-                        
-                        self.__screen.print_str(data.pre_close, 15, 72+i*70, color=self.__color.GAINSBORO, backcolor=None,size=1)
-                        self.__screen.print_str('/', 85, 72+i*70, color=self.__color.WHITE, backcolor=None,size=1)
-                        self.__screen.print_str(data.last_price, 95, 72+i*70, color=price_color, backcolor=None,size=1)
+                            
+                            self.__screen.print_str(data.pre_close, 15, 72+i*70, color=self.__color.GAINSBORO, backcolor=None,size=1)
+                            self.__screen.print_str('/', 85, 72+i*70, color=self.__color.WHITE, backcolor=None,size=1)
+                            self.__screen.print_str(data.last_price, 95, 72+i*70, color=price_color, backcolor=None,size=1)
                         
             
