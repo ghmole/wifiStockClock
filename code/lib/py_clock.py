@@ -26,7 +26,7 @@ class PyClock:
     
     ''' UI类 '''
     __clock_weather_ui        = None  # 天气时间UI
-    __clock_weather_win_xp_ui = None  # winxp 天气时间UI
+    #__clock_weather_win_xp_ui = None  # winxp 天气时间UI
     __clock_stock_ui = None           # 股票 UI
     
     ''' 看门狗 '''
@@ -34,7 +34,7 @@ class PyClock:
     __is_use_wdt = True  # 是否启用看门狗
  
     
-    __ui_num = 3    # UI的数量
+    __ui_num = 2    # UI的数量
     __ui_index = -1 # 当前UI的序号
     __is_switch_new_ui = True # 是否 切换了新界面
     
@@ -60,7 +60,7 @@ class PyClock:
                  log, color,
                  screen, wifi, led, 
                  time_service, weather_service, calendar_service, stock_service,
-                 clock_weather_ui, clock_weather_win_xp_ui, clock_stock_ui):
+                 clock_weather_ui, clock_stock_ui):
         gc.collect()
         
         self.__log   = log
@@ -76,7 +76,6 @@ class PyClock:
         self.__stock_service = stock_service
         
         self.__clock_weather_ui        = clock_weather_ui
-        self.__clock_weather_win_xp_ui = clock_weather_win_xp_ui
         self.__clock_stock_ui = clock_stock_ui
         
         self.__stock_bean = StockBean(log)
@@ -321,22 +320,19 @@ class PyClock:
                     # 界面初始化（获取数据之后）
                     if (self.__is_switch_new_ui):
                         if (self.__ui_index == 0):
-                            self.__clock_weather_win_xp_ui.init() 
+                            self.__clock_stock_ui.init()
                         elif (self.__ui_index == 1):
                             self.__clock_weather_ui.init()
-                        elif (self.__ui_index==2):
-                            self.__clock_stock_ui.init()
+                       
                             
                         self.__is_switch_new_ui = False
                     
                     # 刷新界面
                     if (self.__ui_index == 0):
-                        self.__clock_weather_win_xp_ui.refresh(datetime, weatherBean, weatherWarn)
+                        self.__clock_stock_ui.refresh(datetime, self.__stock_bean)
                     elif (self.__ui_index == 1):
                         self.__clock_weather_ui.refresh(datetime, weatherBean, weatherWarn, calendarBean)
-                    elif (self.__ui_index == 2):
-                        
-                        self.__clock_stock_ui.refresh(datetime, self.__stock_bean)
+                    else:
                         pass
                     
                     
