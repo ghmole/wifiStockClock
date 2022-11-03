@@ -22,7 +22,8 @@ class PyClock:
     ''' 业务类 '''
     __time_service    = None  # 时间
     __weather_service = None  # 天气
-    __stock_service = None    #股票
+    __stock_service = None    # 股票
+    __bluetooth_service = None# 蓝牙
     
     ''' UI类 '''
     __clock_weather_ui        = None  # 天气时间UI
@@ -59,7 +60,7 @@ class PyClock:
     def __init__(self,
                  log, color,
                  screen, wifi, led, 
-                 time_service, weather_service, calendar_service, stock_service,
+                 time_service, weather_service, calendar_service, stock_service,bluetooth_service,
                  clock_weather_ui, clock_stock_ui):
         gc.collect()
         
@@ -74,6 +75,7 @@ class PyClock:
         self.__weather_service  = weather_service
         self.__calendar_service = calendar_service
         self.__stock_service = stock_service
+        self.__bluetooth_service = bluetooth_service
         
         self.__clock_weather_ui        = clock_weather_ui
         self.__clock_stock_ui = clock_stock_ui
@@ -261,7 +263,7 @@ class PyClock:
                 
                 # 获取数据
                 # winxp+weatherclock UI: 每10分钟获取一次 天气数据和预警信息
-                if (self.__ui_index == 0 or self.__ui_index == 1):
+                if (self.__ui_index == 1 ):
                     hour = datetime[4]
                     minute = datetime[5]
  
@@ -277,6 +279,7 @@ class PyClock:
                     # 开机后检测一次，之后每小时的25分检测一次更新; 并更新时间
                     if (self.__last_get_upgrade_hour == 25 or (minute % 25 == 0  and self.__last_get_upgrade_hour != hour)):
                         self.__wifi.multi_wifi_connect()
+                        self.__feed_wdt()
                         
                         # 更新机器的时间为网络时间
                         if (self.__last_get_upgrade_hour != 25):
@@ -285,8 +288,8 @@ class PyClock:
                         
                         self.__last_get_upgrade_hour = hour
                         
-                elif (self.__ui_index == 2):        # stock ui
-                    #self.__log.info('PyClock.get_stock_data()')
+                elif (self.__ui_index == 0):        # stock ui
+                    #self.__log.info('PyClock.get_stock_data() check second:',second, self.__last_refresh_ui_second)
                     if second!=self.__last_refresh_ui_second:
                         #self.__log.info('PyClock.get_stock_data() second=',second)
                         current_stock_index=int((second+4)/5) % 12
@@ -308,6 +311,7 @@ class PyClock:
                                 self.__stock_update_index= (self.__stock_update_index+1) % self.__stock_num
                                 self.__log.info('PyClock update stock_bean  updat_index=', self.__stock_update_index )
                             self.__stock_bean.check_bean_data()
+                            self.__feed_wdt()
                         
                       
                 # 刷新UI数据
@@ -323,8 +327,6 @@ class PyClock:
                             self.__clock_stock_ui.init()
                         elif (self.__ui_index == 1):
                             self.__clock_weather_ui.init()
-                       
-                            
                         self.__is_switch_new_ui = False
                     
                     # 刷新界面
@@ -345,6 +347,15 @@ class PyClock:
                
                
                     self.__last_refresh_ui_second = second
+                
+                # 处理蓝牙消息
+                gc.collect()
+                BLE_MSG=self.__bluetooth_service.get_msg()
+                if BLE_MSG is not "":
+                    self.__feed_wdt()
+                    self.process_ble_msg(BLE_MSG)
+                    self.__bluetooth_service.set_msg("")
+                    BLE_MSG=""
                     
                 self.__feed_wdt()
             except BaseException as e:
@@ -361,8 +372,50 @@ class PyClock:
     
         
         
-        
-        
+    '处理蓝牙消息'    
+    def process_ble_msg(self,ble_msg):
+        try:
+            if 'stock' in ble_msg:
+                stockcode=ble_msg.split(':')[1]
+                if 'add' in ble_msg:
+                    if self.__stock_num < self.__max_stock_num:
+                        self.__stock_list.append(stockcode)                 
+                        self.__stock_bean.add_stock_data(StockData(self.__stock_num))
+                        self.__stock_num += 1
+                        self.__log.info('PyClock.process_ble_msg(): add stock code ',stockcode) 
+                    pass
+                elif 'del' in ble_msg or 'remove' in ble_msg:
+                    pass
+                else:
+                    pass
+                self.__log.info('bluetooth command stock',stockcode) 
+            elif 'wifi' in ble_msg:
+                ssid = ble_msg.split(':')[1].split(',')[0]
+                
+                if 'add' in ble_msg:
+                    passwd = ble_msg.split(':')[1].split(',')[1]
+                    pass
+                elif 'del' in ble_msg or 'remove' in ble_msg:
+                    
+                    pass
+                else:
+                    pass
+                self.__log.info('bluetooth command wifi', ssid) 
+            elif 'city' in ble_msg:
+                if 'add' in ble_msg:
+                    pass
+                elif 'del' in ble_msg or 'remove' in ble_msg:
+                    pass
+                else:
+                    pass
+                self.__log.info('bluetooth command city') 
+            else:
+                pass
+        except BaseException as e:
+            self.__log.error("PyClock.process_ble_msg(): " + __file__ + ', ' + repr(e))
+
+        gc.collect()    
+            
             
     '记录获取数据 成功或失败'
     def update_data_status(self, index, is_success):

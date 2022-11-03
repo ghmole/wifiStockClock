@@ -16,9 +16,9 @@ class ClockStockUI():
     # 画背景
     def background(self):
 
-        self.__screen.draw_rect(5, 32, 230, 66, color=self.__color.CL_YOU, border=5, fillcolor=None)
-        self.__screen.draw_rect(5, 102, 230, 66, color=self.__color.CL_YOU, border=5, fillcolor=None)
-        self.__screen.draw_rect(5, 172, 230, 66, color=self.__color.CL_YOU, border=5, fillcolor=None)
+        self.__screen.draw_rect(3, 32, 236, 66, color=self.__color.CL_YOU, border=5, fillcolor=None)
+        self.__screen.draw_rect(3, 102, 236, 66, color=self.__color.CL_YOU, border=5, fillcolor=None)
+        self.__screen.draw_rect(3, 172, 236, 66, color=self.__color.CL_YOU, border=5, fillcolor=None)
 
         self.__screen.print_str('stock', 90, 1, color=self.__color.CYAN, backcolor=None, size=2)
     
@@ -42,14 +42,14 @@ class ClockStockUI():
         else:
             self.__screen.print_str('0'+str(hour), 160, 5, self.__color.GREEN, backcolor=None, size=1)
         
-        self.__screen.print_str(':', 180, 5, self.__color.WHITE, backcolor=None, size=1)
+        self.__screen.print_str(':', 180, 5, self.__color.GRAY, backcolor=None, size=1)
         
         if minute > 9:
             self.__screen.print_str(str(minute), 190, 5, self.__color.YELLOW, backcolor=None, size=1)
         else:
             self.__screen.print_str('0'+str(minute), 190, 5, self.__color.YELLOW, backcolor=None, size=1)
             
-        self.__screen.print_str(':', 210, 5, self.__color.WHITE, backcolor=None, size=1)
+        self.__screen.print_str(':', 210, 5, self.__color.GRAY, backcolor=None, size=1)
         
         if second > 9:
             self.__screen.print_str(str(second), 220, 5, self.__color.RED, backcolor=None, size=1)
@@ -74,8 +74,8 @@ class ClockStockUI():
         second=datetime[6]
         
         if second % 15==2:
-            self.__log.info('stock_ui.refresh(): second=', second)
-            self.__log.info('stock_ui.refresh(): meet second%15=2 ')
+            #self.__log.info('stock_ui.refresh(): second=', second)
+            #self.__log.info('stock_ui.refresh(): meet second%15=2 ')
             self.__log.info('stock_ui.refresh(): stock_num=', stock_num)
             self.__log.info('stock_ui.refresh(): max_stock_page=', max_stock_page)
             
@@ -83,7 +83,7 @@ class ClockStockUI():
             self.__log.info('stock_ui.refresh(): current_page=', current_page+1)
             if current_page<=max_stock_page:
                 for i in range(3):
-                    self.__log.info('stock_ui.refresh(): i=', i)
+                    #self.__log.info('stock_ui.refresh(): i=', i)
                     stock_index=current_page*3+i
                     if stock_index < stock_num:
                     
@@ -91,10 +91,10 @@ class ClockStockUI():
                         data= stockBean.get_stock_data(stock_index)
                         self.__log.info('stock_ui.refresh(): stock code=',data.stock_code)
                         self.__screen.print_str(data.stock_code, 15, 36+i*70, \
-                                                color=self.__color.WHITE, \
+                                                color=self.__color.GRAY, \
                                                 backcolor=None,size=3)
                         self.__log.info('stock_ui.refresh(): diff_price=',data.diff_price)
-                        self.__log.info('stock_ui.refresh(): diff_percent=',data.diff_percent)
+                        self.__log.info('stock_ui.refresh(): diff_perct=',data.diff_percent)
                         
                         if data.diff_price is not '':
                             if float(data.diff_price)>0:
@@ -107,13 +107,26 @@ class ClockStockUI():
                             self.__screen.print_str(data.diff_price, 145, 40+i*70, \
                                                     color=price_color, \
                                                     backcolor=None,size=2)
-                            self.__screen.print_str(data.diff_percent, 170, 72+i*70, \
+                            self.__screen.print_str(data.diff_percent, 165, 72+i*70, \
                                                     color=price_color, \
                                                     backcolor=None,size=1)
                             
                             
                             self.__screen.print_str(data.pre_close, 15, 72+i*70, color=self.__color.GAINSBORO, backcolor=None,size=1)
-                            self.__screen.print_str('/', 85, 72+i*70, color=self.__color.WHITE, backcolor=None,size=1)
+                            self.__screen.print_str('/', 87, 72+i*70, color=self.__color.WHITE, backcolor=None,size=1)
                             self.__screen.print_str(data.last_price, 95, 72+i*70, color=price_color, backcolor=None,size=1)
+                        else:
+                            self.__screen.print_str(' '*7, 145, 40+i*70, \
+                                                    color=self.__color.BLACK, \
+                                                    backcolor=None,size=2)
+                            self.__screen.print_str(' '*7, 165, 72+i*70, \
+                                                    color=self.__color.BLACK, \
+                                                    backcolor=None,size=1)
+                            
+                            
+                            self.__screen.print_str(' '*9, 15, 72+i*70, color=self.__color.BLACK, backcolor=None,size=1)
+                            self.__screen.print_str(' ', 87, 72+i*70, color=self.__color.BLACK, backcolor=None,size=1)
+                            self.__screen.print_str(' '*9, 95, 72+i*70, color=self.__color.BLACK, backcolor=None,size=1)
+
                         
             

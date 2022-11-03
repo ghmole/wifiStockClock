@@ -10,6 +10,7 @@ class Color(object):
     ORANGE = (255,128,0)
     GAINSBORO= (220,220,220)
     CYAN = (139, 230, 255)
+    GRAY = (192, 192, 192)
 
     # 空气质量颜色
     AQI_YOU = (50, 205, 50)        # 优 
