@@ -122,11 +122,24 @@ class ClockStockUI():
                             self.__screen.print_str(' '*7, 165, 72+i*70, \
                                                     color=self.__color.BLACK, \
                                                     backcolor=None,size=1)
-                            
-                            
+
                             self.__screen.print_str(' '*9, 15, 72+i*70, color=self.__color.BLACK, backcolor=None,size=1)
                             self.__screen.print_str(' ', 87, 72+i*70, color=self.__color.BLACK, backcolor=None,size=1)
                             self.__screen.print_str(' '*9, 95, 72+i*70, color=self.__color.BLACK, backcolor=None,size=1)
 
-                        
+                    else:
+                        self.__screen.print_str(' '*8, 15, 36+i*70, \
+                                                color=self.__color.GRAY, \
+                                                backcolor=None,size=3)
+                        self.__screen.print_str(' '*7, 145, 40+i*70, \
+                                                    color=self.__color.BLACK, \
+                                                    backcolor=None,size=2)
+                        self.__screen.print_str(' '*8, 165, 72+i*70, \
+                                                    color=self.__color.BLACK, \
+                                                    backcolor=None,size=1)
+                            
+                        self.__screen.print_str(' '*9, 15, 72+i*70, color=self.__color.BLACK, backcolor=None,size=1)
+                        self.__screen.print_str(' ', 87, 72+i*70, color=self.__color.BLACK, backcolor=None,size=1)
+                        self.__screen.print_str(' '*9, 95, 72+i*70, color=self.__color.BLACK, backcolor=None,size=1)
+
             

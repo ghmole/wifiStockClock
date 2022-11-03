@@ -23,6 +23,14 @@ class StockBean():
             self.__stock_num +=1
             self.__log.info('StockBean.add_stock_data(): __stock_num=', self.__stock_num)
     
+    
+    def del_stock_data(self, stockindex):
+        if stockindex>=0 and stockindex<len(self.__stock_data):
+            self.__log.info('StockBean.del_stock_data(): index=', stockindex)
+            self.__log.info('StockBean.del_stock_data(): code=', self.__stock_data[stockindex].stock_code)
+            del self.__stock_data[stockindex]
+            self.__stock_num -=1
+
     # 复制数据
     def copy_stock_data(self,dest,src):
         dest.uid = src.uid

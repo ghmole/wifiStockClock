@@ -383,9 +383,17 @@ class PyClock:
                         self.__stock_bean.add_stock_data(StockData(self.__stock_num))
                         self.__stock_num += 1
                         self.__log.info('PyClock.process_ble_msg(): add stock code ',stockcode) 
-                    pass
+
                 elif 'del' in ble_msg or 'remove' in ble_msg:
-                    pass
+                    if self.__stock_num >0:
+                        if stockcode in self.__stock_list:
+                            for codeindex, code in enumerate(self.__stock_list):
+                                if code==stockcode:
+                                    break
+                            if codeindex >=0 and codeindex < len(self.__stock_list):
+                                del self.__stock_list[codeindex]
+                                self.__stock_bean.del_stock_data(codeindex)
+                                self.__stock_num -= 1
                 else:
                     pass
                 self.__log.info('bluetooth command stock',stockcode) 
