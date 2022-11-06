@@ -15,8 +15,13 @@ wifilist.cfg格式如下：
 
 [ "{\"ssid\": \"SSID1\", \"password\": \"PASSWD1\"}","{\"ssid\": \"SSID2\", \"password\": \"PASSWD2\"}"]
 
-3，增加了蓝牙接口，可以通过以下命令增删股票（必须以sh、sz开头）
+3，增加了蓝牙接口，搜索pyClockBLE设备，通过uart发送以下命令增删股票（必须以sh、sz开头）
 
 添加股票：   stock add:sh600000
 
 删除股票：   stock del:sz000001 
+
+
+通过uart发送以下命令增删wifi热点、
+增加热点：   wifi add:ssid,password
+删除热点:    wifi del:ssid

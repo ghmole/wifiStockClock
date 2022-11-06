@@ -132,7 +132,21 @@ class PyClock:
             self.__log.info('read_stock_list():  stock_num=',self.__stock_num)
             self.__log.info('read_stock_list():  stock_page=',self.__stock_page)
             self.__log.info('read_stock_list(): list=' , self.__stock_list)
-             
+            
+    def write_stock_list(self):
+        self.__log.info('pyClock.write_stock_list():  stock_list len=', len(self.__stock_list))
+        f = open('/data/config/stocklist.cfg', 'wt')
+        # 逐个写入股票代码
+        for i in range(3,len(self.__stock_list)):
+            stockcode=self.__stock_list[i]
+
+            f.write(stockcode)
+            # print(i, len(stocklist))
+            # 写入换行
+            if i!=len(self.__stock_list)-1:
+                f.write('\n')
+        f.close()
+        
      # 初始化股票代码
     def init_stock_bean(self):
         for index,stockcode in enumerate(self.__stock_list):
@@ -382,6 +396,7 @@ class PyClock:
                         self.__stock_list.append(stockcode)                 
                         self.__stock_bean.add_stock_data(StockData(self.__stock_num))
                         self.__stock_num += 1
+                        self.write_stock_list()
                         self.__log.info('PyClock.process_ble_msg(): add stock code ',stockcode) 
 
                 elif 'del' in ble_msg or 'remove' in ble_msg:
@@ -390,25 +405,34 @@ class PyClock:
                             for codeindex, code in enumerate(self.__stock_list):
                                 if code==stockcode:
                                     break
-                            if codeindex >=0 and codeindex < len(self.__stock_list):
+                            if codeindex >=3 and codeindex < len(self.__stock_list):
                                 del self.__stock_list[codeindex]
                                 self.__stock_bean.del_stock_data(codeindex)
                                 self.__stock_num -= 1
+                                self.write_stock_list()
+                                self.__log.info('PyClock.process_ble_msg(): del stock code ',stockcode) 
+                            elif codeindex<3:
+                                self.__log.info('can not delete stock index')
                 else:
                     pass
-                self.__log.info('bluetooth command stock',stockcode) 
+                self.__log.info('bluetooth command stock',stockcode)
+                
             elif 'wifi' in ble_msg:
                 ssid = ble_msg.split(':')[1].split(',')[0]
                 
                 if 'add' in ble_msg:
                     passwd = ble_msg.split(':')[1].split(',')[1]
-                    pass
-                elif 'del' in ble_msg or 'remove' in ble_msg:
+                    self.__wifi.add_wifi_info(ssid,passwd)
+                    self.__log.info('bluetooth add wifi', ssid, passwd)
                     
-                    pass
+                elif 'del' in ble_msg or 'remove' in ble_msg:
+                    self.__wifi.del_wifi_info(ssid)
+                    self.__log.info('bluetooth del wifi', ssid)
+                    
                 else:
                     pass
-                self.__log.info('bluetooth command wifi', ssid) 
+                self.__log.info('bluetooth command wifi', ssid)
+                
             elif 'city' in ble_msg:
                 if 'add' in ble_msg:
                     pass
