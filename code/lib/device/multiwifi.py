@@ -92,22 +92,78 @@ class MultiWifi:
             #串口打印信息
             self.__log.info('network information:'+ str(wlan.ifconfig()))
             
-         
-
-    def multi_wifi_connect(self):
-        self.__log.info("Multi.multi_wifi_connect")   
+    
+    def read_wifi_list(self, cfgfile='wifilist.cfg'):
+        self.__log.info("Multi.read_wifi_list()")   
         #执行WIFI连接函数
-        f = open('/data/config/wifilist.cfg', 'r') #获取账号密码
-        info = json.loads(f.read())
+        f = open('/data/config/'+cfgfile, 'r') # 获取账号密码
+        wifilist = json.loads(f.read())
+        f.close()
+        return wifilist
+    
+    def write_wifi_list(self,wifilist, cfgfile='wifilist.cfg'):
+        self.__log.info("Multi.write_wifi_info()")
+        # write to file
+        f = open('/data/config/'+cfgfile, 'wt') # 记录账号密码
+        f.write(json.dumps(wifilist))
         f.close()
 
+    # 查找wifi信息，返回list中的index,找不到返回None
+    def find_wifi_info_in_list(self,ssid, wifilist=None):
+        self.__log.info("Multi.find_wifi_info_in_list()",ssid)
+        if wifilist is None:
+            wifilist=self.read_wifi_list()
+            
+        for idx,wifi in enumerate(wifilist):
+            info=json.loads(wifi)
+            if info['ssid']==ssid:
+                return idx
+        return None
+        
+    def add_wifi_info(self,ssid,passwd):
+        self.__log.info("Multi.add_wifi_info()")  
+        wifilist=self.read_wifi_list()
+        idx=self.find_wifi_info_in_list(ssid)
+        self.__log.info("Multi.add_wifi_info()", idx)  
+        if idx is None:
+            data={'ssid':ssid, 'password':passwd}
+            wifi=json.dumps(data)
+            wifilist.append(wifi)
+            self.write_wifi_list(wifilist)
+        else:
+            data=json.loads(wifilist[idx])
+            data['password']=passwd
+            wifi=json.dumps(data)
+            wifilist[idx]=wifi
+            self.write_wifi_list(wifilist)
+            
+    def del_wifi_info(self,ssid):
+        try:
+            wifilist=self.read_wifi_list()
+            idx=self.find_wifi_info_in_list(ssid,wifilist)
+            if idx is not None:
+                wifilist.pop(idx)
+                self.write_wifi_list(wifilist)
+            else:
+                raise ValueError("ssid :'" + ssid + "' not in wifi list!")
+            
+        except BaseException as e:
+            gc.collect()
+            self.__log.error("Multi.del_wifi_info error : " + __file__ + ', ' + repr(e))    
+    
+    def multi_wifi_connect(self):
+        self.__log.info("Multi.multi_wifi_connect()")   
+        #执行WIFI连接函数
+ 
+        wifilist = self.read_wifi_list()
+ 
     #     print(info)
         wlan = network.WLAN(network.STA_IF) #STA模式
         self.__screen.picture(5,5,"/data/picture/wifi_slash.jpg")
         if not wlan.isconnected():
-            for data in info:
-                self.__log.info(data)   
-                wificonfig=json.loads(data)
+            for wifi in wifilist:
+                self.__log.info(wifi)   
+                wificonfig=json.loads(wifi)
     #             print(wificonfig)
     #             wdt.feed() #喂狗
                 self.wifi_connect(wificonfig['ssid'],wificonfig['password'])
@@ -119,7 +175,7 @@ class MultiWifi:
         else:
     #         print(dir(wlan))
             self.__screen.picture(5,5,"/data/picture/wifi.jpg")
-            self.__log.info('connected AP:'+wlan.config('essid'))
+            self.__log.info('AP Connected:'+wlan.config('essid'))
             #显示IP信息
             #self.__screen.print_str('connected AP:',10,50,color=(255,255,255),backcolor=None,size=2)
             #self.__screen.print_str(wlan.config('essid'),30,80,color=(255,255,255),backcolor=None,size=2)

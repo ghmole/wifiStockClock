@@ -6,12 +6,12 @@ class ClockStockUI():
     __log    = None
     __color  = None
     __screen = None
+    __page   = 0
     
     def __init__(self, log, color, screen):
         self.__log = log
         self.__color = color
-        self.__screen = screen
-        
+        self.__screen = screen   
       
     # 画背景
     def background(self):
@@ -79,7 +79,8 @@ class ClockStockUI():
             self.__log.info('stock_ui.refresh(): stock_num=', stock_num)
             self.__log.info('stock_ui.refresh(): max_stock_page=', max_stock_page)
             
-            current_page = int(second/15)%4
+            #current_page = int(second/15)%4
+            current_page =  self.__page % max_stock_page
             self.__log.info('stock_ui.refresh(): current_page=', current_page+1)
             if current_page<=max_stock_page:
                 for i in range(3):
@@ -142,4 +143,4 @@ class ClockStockUI():
                         self.__screen.print_str(' ', 87, 72+i*70, color=self.__color.BLACK, backcolor=None,size=1)
                         self.__screen.print_str(' '*9, 95, 72+i*70, color=self.__color.BLACK, backcolor=None,size=1)
 
-            
+                self.__page +=1
