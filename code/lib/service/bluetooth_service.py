@@ -24,7 +24,7 @@ class BluetoothService():
         self.timer1.deinit()
 
     def disconnected(self):        
-        self.timer1.init(period=1000, mode=Timer.PERIODIC, callback=lambda t: self.__log.info('wait connect',t))
+        self.timer1.init(period=1000, mode=Timer.PERIODIC, callback=lambda t: self.__log.info('wait connect'+str(t)))
 
     def ble_irq(self, event, data):
         

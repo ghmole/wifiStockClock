@@ -76,26 +76,26 @@ class ClockStockUI():
         if second % 15==2:
             #self.__log.info('stock_ui.refresh(): second=', second)
             #self.__log.info('stock_ui.refresh(): meet second%15=2 ')
-            self.__log.info('stock_ui.refresh(): stock_num=', stock_num)
-            self.__log.info('stock_ui.refresh(): max_stock_page=', max_stock_page)
+            self.__log.info('stock_ui.refresh(): stock_num=' + str(stock_num))
+            self.__log.info('stock_ui.refresh(): max_stock_page=' + str(max_stock_page))
             
             #current_page = int(second/15)%4
             current_page =  self.__page % max_stock_page
-            self.__log.info('stock_ui.refresh(): current_page=', current_page+1)
+            self.__log.info('stock_ui.refresh(): current_page=' + str(current_page+1))
             if current_page<=max_stock_page:
                 for i in range(3):
                     #self.__log.info('stock_ui.refresh(): i=', i)
                     stock_index=current_page*3+i
                     if stock_index < stock_num:
                     
-                        self.__log.info('stock_ui.refresh(): index=', stock_index)
+                        self.__log.info('stock_ui.refresh(): index=' + str(stock_index))
                         data= stockBean.get_stock_data(stock_index)
-                        self.__log.info('stock_ui.refresh(): stock code=',data.stock_code)
+                        self.__log.info('stock_ui.refresh(): stock code=' + data.stock_code)
                         self.__screen.print_str(data.stock_code, 15, 36+i*70, \
                                                 color=self.__color.GRAY, \
                                                 backcolor=None,size=3)
-                        self.__log.info('stock_ui.refresh(): diff_price=',data.diff_price)
-                        self.__log.info('stock_ui.refresh(): diff_perct=',data.diff_percent)
+                        self.__log.info('stock_ui.refresh(): diff_price=' + str(data.diff_price))
+                        self.__log.info('stock_ui.refresh(): diff_perct=' + str(data.diff_percent))
                         
                         if data.diff_price is not '':
                             if float(data.diff_price)>0:

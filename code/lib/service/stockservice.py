@@ -83,20 +83,20 @@ class StockService():
                     else:
                         vdiff=int((float(vargs[3])-float(vargs[4]))*100)/100
                         self.__stock_data.diff_price =  self.pad_diff(vdiff)
-                    self.__log.info('vdiff : %f\n' % (vdiff))
+#                     self.__log.info('vdiff : %f\n' % (vdiff))
                     
                     vpercent=int((float(vargs[3])-float(vargs[4]))/float(vargs[4])*10000+0.5)/100
-                    self.__log.info('vpercent : %f\n' % (vpercent))
+#                     self.__log.info('vpercent : %f\n' % (vpercent))
                     self.__stock_data.diff_percent = self.pad_percent(vpercent)
                              
  
-                self.__log.info('stock_name: %s\n' % self.__stock_data.stock_name)
-                self.__log.info('stock_code: %s\n' % self.__stock_data.stock_code)
-                self.__log.info('last_price: %s\n' % self.__stock_data.last_price)
-                self.__log.info('pre_close:  %s\n' % self.__stock_data.pre_close)
-                self.__log.info('open_price: %s\n' % self.__stock_data.open_price)
-                self.__log.info('diff_price: %s\n' % (self.__stock_data.diff_price))
-                self.__log.info('diff_perct: %s\n' % (self.__stock_data.diff_percent))
+#                 self.__log.info('stock_name: %s\n' % self.__stock_data.stock_name)
+#                 self.__log.info('stock_code: %s\n' % self.__stock_data.stock_code)
+#                 self.__log.info('last_price: %s\n' % self.__stock_data.last_price)
+#                 self.__log.info('pre_close:  %s\n' % self.__stock_data.pre_close)
+#                 self.__log.info('open_price: %s\n' % self.__stock_data.open_price)
+#                 self.__log.info('diff_price: %s\n' % (self.__stock_data.diff_price))
+#                 self.__log.info('diff_perct: %s\n' % (self.__stock_data.diff_percent))
             
             gc.collect() #内存回收
             return True
@@ -117,13 +117,13 @@ class StockService():
      
     
     def pad_diff(self, f, fmt='{0:>+5.2f}', w=7):
-        self.__log.info('StockService.pad_diff():')
-        self.__log.info('StockService.pad_diff():f=', f)
+#         self.__log.info('StockService.pad_diff():')
+#         self.__log.info('StockService.pad_diff():f=', f)
         
         # '{0:>+10.2f}'.format()
         s=fmt.format(f)
          
-        self.__log.info('StockService.pad_diff():s=',s)
+#         self.__log.info('StockService.pad_diff():s=',s)
          
         if len(s)<w:
             s=' '*(w-len(s))+s 
@@ -131,7 +131,7 @@ class StockService():
         return s
     
     def pad_percent(self, f, fmt='{0:>+5.2f}', w=7):
-        self.__log.info('StockService.pad_percent():')
+#         self.__log.info('StockService.pad_percent():')
         s= fmt.format(f)
         if len(s)<w:
             s= ' '*(w-len(s))+s 
@@ -139,10 +139,10 @@ class StockService():
     
     
     def pad_price(self, f, fmt='{0:>+7.2f}', w=9):
-        self.__log.info('StockService.pad_price()')
+#         self.__log.info('StockService.pad_price()')
         s= fmt.format(f)
  
-        self.__log.info('StockService.pad_price(): len=',len(s),'value=',s)
+#         self.__log.info('StockService.pad_price(): len=',len(s),'value=',s)
         if len(s)<w:
             s=' '*(w-len(s))+s 
         

@@ -29,11 +29,7 @@ from lib.service.calendar_service import CalendarService           # 日历
 from lib.service.stockservice import  StockService                 # 股票
 from lib.service.bluetooth_service import BluetoothService         # 蓝牙
 
-# UI类
-gc.collect()
-from lib.ui.clock_weather_ui import ClockWeatherUI              # 天气时间UI
-#from lib.ui.clock_weather_win_xp_ui import ClockWeatherWinXpUI  # winxp 天气时间UI
-from lib.ui.clock_stock_ui import ClockStockUI                  # 股票UI
+
 
 
 gc.collect()
@@ -50,11 +46,11 @@ time_service     = TimeService(log)
 weather_service  = WeatherBaiduService(log)
 calendar_service = CalendarService(log)
 stock_service = StockService(log)
-bluetooth_service = BluetoothService("pyClockBLE",log)
+bluetooth_service = None #BluetoothService("pyClockBLE",log)
 
-clock_weather_ui        = ClockWeatherUI(log, color, screen)
-#clock_weather_win_xp_ui = ClockWeatherWinXpUI(log, color, screen)
-clock_stock_ui = ClockStockUI(log, color, screen)
+# clock_weather_ui        = ClockWeatherUI(log, color, screen)
+# #clock_weather_win_xp_ui = ClockWeatherWinXpUI(log, color, screen)
+# clock_stock_ui = ClockStockUI(log, color, screen)
 
 
 gc.collect()
@@ -63,8 +59,7 @@ gc.collect()
 PyClock(
     log, color,
     screen, wifi, led,
-    time_service, weather_service, calendar_service, stock_service, bluetooth_service,
-    clock_weather_ui, clock_stock_ui
+    time_service, weather_service, calendar_service, stock_service, bluetooth_service
 ).run() 
 
 

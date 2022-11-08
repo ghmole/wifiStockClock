@@ -3,6 +3,13 @@ from machine import Pin, WDT, reset
 import time, gc, machine
 import os 
 from lib.bean.stock_bean import * # 股票数据模板
+# UI类
+gc.collect()
+from lib.ui.clock_weather_ui import ClockWeatherUI              # 天气时间UI
+#from lib.ui.clock_weather_win_xp_ui import ClockWeatherWinXpUI  # winxp 天气时间UI
+from lib.ui.clock_stock_ui import ClockStockUI                  # 股票UI
+gc.collect()
+
 
 
 class PyClock:
@@ -60,8 +67,7 @@ class PyClock:
     def __init__(self,
                  log, color,
                  screen, wifi, led, 
-                 time_service, weather_service, calendar_service, stock_service,bluetooth_service,
-                 clock_weather_ui, clock_stock_ui):
+                 time_service, weather_service, calendar_service, stock_service,bluetooth_service):
         gc.collect()
         
         self.__log   = log
@@ -77,8 +83,8 @@ class PyClock:
         self.__stock_service = stock_service
         self.__bluetooth_service = bluetooth_service
         
-        self.__clock_weather_ui        = clock_weather_ui
-        self.__clock_stock_ui = clock_stock_ui
+        self.__clock_weather_ui        = ClockWeatherUI(log, color, screen)
+        self.__clock_stock_ui = ClockStockUI(log, color, screen)
         
         self.__stock_bean = StockBean(log)
         # 3 个指数
@@ -128,13 +134,13 @@ class PyClock:
             f.close()
             self.__stock_num = len(self.__stock_list)
             self.__stock_page = int((self.__stock_num+2)/3)
-            self.__log.info('read_stock_list():  stock_list len=', len(self.__stock_list))
-            self.__log.info('read_stock_list():  stock_num=',self.__stock_num)
-            self.__log.info('read_stock_list():  stock_page=',self.__stock_page)
-            self.__log.info('read_stock_list(): list=' , self.__stock_list)
+            self.__log.info('read_stock_list():  stock_list len=' + str(len(self.__stock_list)))
+            self.__log.info('read_stock_list():  stock_num=' + str(self.__stock_num))
+            self.__log.info('read_stock_list():  stock_page=' + str(self.__stock_page))
+            self.__log.info('read_stock_list(): list=' + str(self.__stock_list))
             
     def write_stock_list(self):
-        self.__log.info('pyClock.write_stock_list():  stock_list len=', len(self.__stock_list))
+        self.__log.info('pyClock.write_stock_list():  stock_list len=' + str(len(self.__stock_list)))
         f = open('/data/config/stocklist.cfg', 'wt')
         # 逐个写入股票代码
         for i in range(3,len(self.__stock_list)):
@@ -224,7 +230,7 @@ class PyClock:
             
     '开始运行'
     def run(self):
-        self.__log.info("PyClock.run")
+        self.__log.info(__file__ +".run")
         
         # 连接WiFi
         self.__wifi.multi_wifi_connect()
@@ -238,9 +244,10 @@ class PyClock:
         self.read_stock_list()
         
         # 初始化股票数据
-        self.init_stock_bean()
-        self.__stock_bean.check_bean_data()
-        
+        #self.init_stock_bean()
+        #self.__stock_bean.check_bean_data()
+        gc.collect()
+                                
         while True:
             try:
                 gc.collect()
@@ -249,11 +256,11 @@ class PyClock:
                     if (self.__ui_index == -1):
                         self.__ui_index = self.__get_init_ui_index()                            
                     
-                    self.__log.info('ui_index:', self.__ui_index)
+                    self.__log.info('ui_index:'+  str(self.__ui_index))
                     # 界面初始化（获取数据之前）
                     if (self.__ui_index == 0):
                         self.__screen.picture(0, 0, "/data/picture/winxp/desktop.jpg")
-                        time.sleep_ms(400)
+                        time.sleep_ms(100)
                     elif (self.__ui_index == 1):
                         pass
  
@@ -280,12 +287,18 @@ class PyClock:
                 if (self.__ui_index == 1 ):
                     hour = datetime[4]
                     minute = datetime[5]
- 
+                    
+                    # 当__last_get_data_minute == 61（第一次运行）初始化天气
                     if (self.__last_get_data_minute == 61 or ((minute % 10 == 0 or (hour == 0 and minute == 3)) and self.__last_get_data_minute != minute)):  # 
                         self.__wifi.multi_wifi_connect()
                         
+                        self.__log.info('PyClock.update_weather()  :'+str(hour)+','+str(minute)+\
+                                        ','+str(second)+','+str(self.__last_refresh_ui_second))
+
                         weatherWarn  = self.__weather_service.get_weather_warn(self, datetime) # 获取 天气预警
+                        gc.collect()
                         weatherBean  = self.__weather_service.get_weather_bean(self, datetime) # 获取 天气数据
+                        gc.collect()
                         calendarBean = self.__calendar_service.get_date_info(datetime)         # 获取 日历数据
                   
                         self.__last_get_data_minute = minute
@@ -303,7 +316,13 @@ class PyClock:
                         self.__last_get_upgrade_hour = hour
                         
                 elif (self.__ui_index == 0):        # stock ui
+                    minute = datetime[5]
                     #self.__log.info('PyClock.get_stock_data() check second:',second, self.__last_refresh_ui_second)
+                    if (self.__last_get_data_minute == 61):
+                        # 初始化股票数据
+                        self.init_stock_bean()
+                        #self.__stock_bean.check_bean_data()
+                        
                     if second!=self.__last_refresh_ui_second:
                         #self.__log.info('PyClock.get_stock_data() second=',second)
                         current_stock_index=int((second+4)/5) % 12
@@ -314,17 +333,18 @@ class PyClock:
                            and second % 5 ==0 and self.__stock_update_index==current_stock_index:
                             
                             current_stock_code = self.__stock_list[current_stock_index]
-                            self.__log.info('PyClock.query_stock() code=:', current_stock_code)
+                            self.__log.info('PyClock.query_stock() code=:'+ current_stock_code)
                             if self.__stock_service.query_stock(current_stock_code):
                                 time.sleep_ms(300) 
                                 stockdata=self.__stock_service.get_stock_data()
                                 time.sleep_ms(20) 
-                                self.__log.info('PyClock update stock_bean  index=', current_stock_index )
+                                self.__log.info('PyClock update stock_bean  index='+ str(current_stock_index ))
                                 self.__stock_bean.update_stock_data(current_stock_index,stockdata)
                                 
                                 self.__stock_update_index= (self.__stock_update_index+1) % self.__stock_num
-                                self.__log.info('PyClock update stock_bean  updat_index=', self.__stock_update_index )
-                            self.__stock_bean.check_bean_data()
+                                self.__log.info('PyClock update stock_bean  updat_index='+str(self.__stock_update_index ))
+                            #self.__stock_bean.check_bean_data()
+                            self.__last_get_data_minute = minute
                             self.__feed_wdt()
                         
                       
@@ -346,7 +366,9 @@ class PyClock:
                     # 刷新界面
                     if (self.__ui_index == 0):
                         self.__clock_stock_ui.refresh(datetime, self.__stock_bean)
-                    elif (self.__ui_index == 1):
+                    elif (self.__ui_index == 1) and \
+                         weatherBean is not None and \
+                         calendarBean is not None:
                         self.__clock_weather_ui.refresh(datetime, weatherBean, weatherWarn, calendarBean)
                     else:
                         pass
@@ -364,13 +386,15 @@ class PyClock:
                 
                 # 处理蓝牙消息
                 gc.collect()
-                BLE_MSG=self.__bluetooth_service.get_msg()
-                if BLE_MSG is not "":
-                    self.__feed_wdt()
-                    self.process_ble_msg(BLE_MSG)
-                    self.__bluetooth_service.set_msg("")
-                    BLE_MSG=""
-                    
+                if self.__bluetooth_service is not None:
+                    BLE_MSG=self.__bluetooth_service.get_msg()
+                    if BLE_MSG is not "":
+                        self.__feed_wdt()
+                        self.process_ble_msg(BLE_MSG)
+                        self.__bluetooth_service.set_msg("")
+                        BLE_MSG=""
+                gc.collect()
+                
                 self.__feed_wdt()
             except BaseException as e:
                 gc.collect()
@@ -397,7 +421,7 @@ class PyClock:
                         self.__stock_bean.add_stock_data(StockData(self.__stock_num))
                         self.__stock_num += 1
                         self.write_stock_list()
-                        self.__log.info('PyClock.process_ble_msg(): add stock code ',stockcode) 
+#                         self.__log.info('PyClock.process_ble_msg(): add stock code '+stockcode) 
 
                 elif 'del' in ble_msg or 'remove' in ble_msg:
                     if self.__stock_num >0:
@@ -410,12 +434,12 @@ class PyClock:
                                 self.__stock_bean.del_stock_data(codeindex)
                                 self.__stock_num -= 1
                                 self.write_stock_list()
-                                self.__log.info('PyClock.process_ble_msg(): del stock code ',stockcode) 
+#                                 self.__log.info('PyClock.process_ble_msg(): del stock code '+stockcode) 
                             elif codeindex<3:
                                 self.__log.info('can not delete stock index')
                 else:
                     pass
-                self.__log.info('bluetooth command stock',stockcode)
+#                 self.__log.info('bluetooth command stock'+stockcode)
                 
             elif 'wifi' in ble_msg:
                 ssid = ble_msg.split(':')[1].split(',')[0]
@@ -423,15 +447,15 @@ class PyClock:
                 if 'add' in ble_msg:
                     passwd = ble_msg.split(':')[1].split(',')[1]
                     self.__wifi.add_wifi_info(ssid,passwd)
-                    self.__log.info('bluetooth add wifi', ssid, passwd)
+#                     self.__log.info('bluetooth add wifi:'+ ssid +','+ passwd)
                     
                 elif 'del' in ble_msg or 'remove' in ble_msg:
                     self.__wifi.del_wifi_info(ssid)
-                    self.__log.info('bluetooth del wifi', ssid)
+#                     self.__log.info('bluetooth del wifi:'+ ssid)
                     
                 else:
                     pass
-                self.__log.info('bluetooth command wifi', ssid)
+#                 self.__log.info('bluetooth command wifi '+ ssid)
                 
             elif 'city' in ble_msg:
                 if 'add' in ble_msg:
@@ -440,7 +464,7 @@ class PyClock:
                     pass
                 else:
                     pass
-                self.__log.info('bluetooth command city') 
+#                 self.__log.info('bluetooth command city') 
             else:
                 pass
         except BaseException as e:

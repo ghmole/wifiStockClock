@@ -110,7 +110,7 @@ class MultiWifi:
 
     # 查找wifi信息，返回list中的index,找不到返回None
     def find_wifi_info_in_list(self,ssid, wifilist=None):
-        self.__log.info("Multi.find_wifi_info_in_list()",ssid)
+        self.__log.info("Multi.find_wifi_info_in_list()" + ssid)
         if wifilist is None:
             wifilist=self.read_wifi_list()
             
@@ -124,7 +124,7 @@ class MultiWifi:
         self.__log.info("Multi.add_wifi_info()")  
         wifilist=self.read_wifi_list()
         idx=self.find_wifi_info_in_list(ssid)
-        self.__log.info("Multi.add_wifi_info()", idx)  
+        self.__log.info("Multi.add_wifi_info()" +  str(idx))  
         if idx is None:
             data={'ssid':ssid, 'password':passwd}
             wifi=json.dumps(data)

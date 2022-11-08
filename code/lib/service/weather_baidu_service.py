@@ -33,7 +33,7 @@ class WeatherBaiduService:
             try:
                 #self.__log.info("mem = " + str(gc.mem_free()))
                 myURL = urequest.urlopen("https://www.qweather.com/severe-weather/" + city_data[1] + "-" + city_data[0] + ".html")
-                self.__log.info('Weather URL: ' + "https://www.qweather.com/severe-weather/" + city_data[1] + "-" + city_data[0] + ".html") #https://www.qweather.com/severe-weather/beijing-101010100.html
+                self.__log.info("Weather URL: " + "https://www.qweather.com/severe-weather/" + city_data[1] + "-" + city_data[0] + ".html") #https://www.qweather.com/severe-weather/beijing-101010100.html
                 
                 for j in range(3):
                     text = myURL.read(6000 + i * 100).decode('UTF-8')
@@ -123,9 +123,12 @@ class WeatherBaiduService:
             text = ''
             myURL = None
             try:
-                #self.__log.info("mem = " + str(gc.mem_free()))
+                self.__log.info("mem = " + str(gc.mem_free()))
+                weather_url="https://weathernew.pae.baidu.com/weathernew/pc?query=" + city + "天气&srcid=4982"
+                self.__log.info("URL:"+ weather_url)
                 myURL = urequest.urlopen("https://weathernew.pae.baidu.com/weathernew/pc?query=" + city + "天气&srcid=4982")
-                self.__log.info('Weather URL: ' + "https://weathernew.pae.baidu.com/weathernew/pc?query=" + city + "天气&srcid=4982")
+                self.__log.info('after urlopen') 
+                self.__log.info('Weather URL: ' + 'https://weathernew.pae.baidu.com/weathernew/pc?query=' + city + '天气&srcid=4982')
                 #https://www.qweather.com/weather/beijing-101010100.html
               
                 for j in range(7):
@@ -381,10 +384,11 @@ class WeatherBaiduService:
         # 获取城市名称
         f = open('/data/config/city.cfg', 'r')
         info = json.loads(f.read())
+        self.__log.info('info='+ str(info))
         f.close()
         
         city = info['CITY'] 
-        
+        self.__log.info('city ='+  str(city))
         return str(city)
 
     '把unicode字符转化正常字符' 
