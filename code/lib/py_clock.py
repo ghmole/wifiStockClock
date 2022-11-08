@@ -321,7 +321,8 @@ class PyClock:
                     if (self.__last_get_data_minute == 61):
                         # 初始化股票数据
                         self.init_stock_bean()
-                        #self.__stock_bean.check_bean_data()
+                        self.__stock_bean.check_bean_data()
+                        self.__last_get_data_minute = minute
                         
                     if second!=self.__last_refresh_ui_second:
                         #self.__log.info('PyClock.get_stock_data() second=',second)
@@ -366,10 +367,12 @@ class PyClock:
                     # 刷新界面
                     if (self.__ui_index == 0):
                         self.__clock_stock_ui.refresh(datetime, self.__stock_bean)
+                        self.__feed_wdt()
                     elif (self.__ui_index == 1) and \
                          weatherBean is not None and \
                          calendarBean is not None:
                         self.__clock_weather_ui.refresh(datetime, weatherBean, weatherWarn, calendarBean)
+                        self.__feed_wdt()
                     else:
                         pass
                     

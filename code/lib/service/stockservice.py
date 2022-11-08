@@ -37,6 +37,7 @@ class StockService():
 #             self.__stock_bean.update_stock_data(i, self.__stock_data)
         
     def query_stock(self, code):
+        self.__log.info('query_stock')
         gc.collect()
         try:
 #             my_url='http://qt.gtimg.cn/r=0.9392363841179758&q='+code

@@ -43,7 +43,7 @@ class StockBean():
         dest.diff_percent = src.diff_percent
         
     def update_stock_data(self,index, stockdata):
-#         self.__log.info('StockBean.update_stock_data(): index=' + index)
+        self.__log.info('StockBean.update_stock_data(): index=' + str(index))
 #         self.__log.info('StockBean.update_stock_data(): stock_num=' + self.__stock_num)
 #         self.__log.info('StockBean.update_stock_data(): max_num=' + self.__max_num)
         if index >=self.__max_num or self.__stock_num >= self.__max_num or self.__stock_num==0:
