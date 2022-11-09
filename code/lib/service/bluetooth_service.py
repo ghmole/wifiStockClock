@@ -1,8 +1,8 @@
 from machine import Timer
 from time import sleep_ms
-import bluetooth
+import bluetooth,gc
 from lib.common.log import Log
-
+gc.collect()
 
 class BluetoothService():
     __conn_handle=None
@@ -24,7 +24,7 @@ class BluetoothService():
         self.timer1.deinit()
 
     def disconnected(self):        
-        self.timer1.init(period=1000, mode=Timer.PERIODIC, callback=lambda t: self.__log.info('wait connect'+str(t)))
+        self.timer1.init(period=5000, mode=Timer.PERIODIC, callback=lambda t: self.__log.info('bt wait connect'+str(t)))
 
     def ble_irq(self, event, data):
         
@@ -72,26 +72,26 @@ class BluetoothService():
     def get_msg(self):
         return self.__BLE_MSG
  
-if __name__ == "__main__":
-    log=Log()
-    ble = BluetoothService("pyClockBLE",log)
-
- 
-
-    while True:
-        if ble.get_msg() == 'read':
-            log.info(ble.get_msg())
-            ble.set_msg("")
- 
-            ble.send('LED is state.')
-        elif ble.get_msg() == 'off':
-            log.info('led will off')
-            ble.set_msg("")
-        elif ble.get_msg() == 'on':
-            log.info('led will on')
-            ble.set_msg("")
-        
-        sleep_ms(1000)
+# if __name__ == "__main__":
+#     log=Log()
+#     ble = BluetoothService("pyClockBLE",log)
+# 
+#  
+# 
+#     while True:
+#         if ble.get_msg() == 'read':
+#             log.info(ble.get_msg())
+#             ble.set_msg("")
+#  
+#             ble.send('LED is state.')
+#         elif ble.get_msg() == 'off':
+#             log.info('led will off')
+#             ble.set_msg("")
+#         elif ble.get_msg() == 'on':
+#             log.info('led will on')
+#             ble.set_msg("")
+#         
+#         sleep_ms(1000)
 
 
 

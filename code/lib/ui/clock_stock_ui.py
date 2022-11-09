@@ -21,6 +21,7 @@ class ClockStockUI():
         self.__screen.draw_rect(3, 172, 236, 66, color=self.__color.CL_YOU, border=5, fillcolor=None)
 
         self.__screen.print_str('stock', 90, 1, color=self.__color.CYAN, backcolor=None, size=2)
+        gc.collect()
     
     '初始化界面'
     def init(self):
@@ -88,14 +89,14 @@ class ClockStockUI():
                     stock_index=current_page*3+i
                     if stock_index < stock_num:
                     
-                        self.__log.info('stock_ui.refresh(): index=' + str(stock_index))
+                        #self.__log.info('stock_ui.refresh(): index=' + str(stock_index))
                         data= stockBean.get_stock_data(stock_index)
-                        self.__log.info('stock_ui.refresh(): stock code=' + data.stock_code)
+                        #self.__log.info('stock_ui.refresh(): stock code=' + data.stock_code)
                         self.__screen.print_str(data.stock_code, 15, 36+i*70, \
                                                 color=self.__color.GRAY, \
                                                 backcolor=None,size=3)
-                        self.__log.info('stock_ui.refresh(): diff_price=' + str(data.diff_price))
-                        self.__log.info('stock_ui.refresh(): diff_perct=' + str(data.diff_percent))
+                        #self.__log.info('stock_ui.refresh(): diff_price=' + str(data.diff_price))
+                        #self.__log.info('stock_ui.refresh(): diff_perct=' + str(data.diff_percent))
                         
                         if data.diff_price is not '':
                             if float(data.diff_price)>0:
@@ -143,4 +144,6 @@ class ClockStockUI():
                         self.__screen.print_str(' ', 87, 72+i*70, color=self.__color.BLACK, backcolor=None,size=1)
                         self.__screen.print_str(' '*9, 95, 72+i*70, color=self.__color.BLACK, backcolor=None,size=1)
 
+                    gc.collect()
                 self.__page +=1
+                

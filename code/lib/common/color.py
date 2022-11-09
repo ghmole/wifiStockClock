@@ -13,19 +13,19 @@ class Color(object):
     GRAY = (192, 192, 192)
 
     # 空气质量颜色
-    AQI_YOU = (50, 205, 50)        # 优 
-    AQI_LIANG = (237, 198, 0)      # 良 
-    AQI_QINGDU = ORANGE            # 轻度
-    AQI_ZHONGDU = RED              # 中度
-    AQI_ZDU = (128, 0, 128)        # 重度
-    AQI_YANZHONG = (218, 112, 214) # 严重
+#     AQI_YOU = (50, 205, 50)        # 优 
+#     AQI_LIANG = (237, 198, 0)      # 良 
+#     AQI_QINGDU = ORANGE            # 轻度
+#     AQI_ZHONGDU = RED              # 中度
+#     AQI_ZDU = (128, 0, 128)        # 重度
+#     AQI_YANZHONG = (218, 112, 214) # 严重
     
     CL_YOU = (156,202,127)         #优
-    CL_LIANG = (249,218,101)       #良 
-    CL_QINGDU = (242,159,57)       #轻度
-    CL_ZHONGDU = (219,85,94)       #中度
-    CL_ZDU = (186,55,121)          #重度
-    CL_YANZHONG = (136,11,32)      #严重
+#     CL_LIANG = (249,218,101)       #良 
+#     CL_QINGDU = (242,159,57)       #轻度
+#     CL_ZHONGDU = (219,85,94)       #中度
+#     CL_ZDU = (186,55,121)          #重度
+#     CL_YANZHONG = (136,11,32)      #严重
     
     # 天气颜色
     WEATHER_ZHENYU = (30, 144, 255)    # 阵雨

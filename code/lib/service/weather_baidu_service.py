@@ -1,11 +1,11 @@
 # 导入相关模块
-import time,re,json
+import  re,json
 from libs.urllib import urequest
 import gc
 
 # 导入工具类
 from lib.bean.weather_bean import * # 天气数据模板
-
+gc.collect()
 
 
 class WeatherBaiduService:
@@ -124,11 +124,11 @@ class WeatherBaiduService:
             myURL = None
             try:
                 self.__log.info("mem = " + str(gc.mem_free()))
-                weather_url="https://weathernew.pae.baidu.com/weathernew/pc?query=" + city + "天气&srcid=4982"
-                self.__log.info("URL:"+ weather_url)
+                #weather_url="https://weathernew.pae.baidu.com/weathernew/pc?query=" + city + "天气&srcid=4982"
+                #self.__log.info("URL:"+ weather_url)
                 myURL = urequest.urlopen("https://weathernew.pae.baidu.com/weathernew/pc?query=" + city + "天气&srcid=4982")
-                self.__log.info('after urlopen') 
-                self.__log.info('Weather URL: ' + 'https://weathernew.pae.baidu.com/weathernew/pc?query=' + city + '天气&srcid=4982')
+                #self.__log.info('after urlopen') 
+                #self.__log.info('Weather URL: ' + 'https://weathernew.pae.baidu.com/weathernew/pc?query=' + city + '天气&srcid=4982')
                 #https://www.qweather.com/weather/beijing-101010100.html
               
                 for j in range(7):
@@ -353,8 +353,8 @@ class WeatherBaiduService:
                 return weatherBean
                     
             except BaseException as e:
-                self.__log.error("Can not get weather! try : " + str(i + 1) )
-                self.__log.error(" error : "+ repr(e))
+                self.__log.error("Can not get weather! try : " + str(i + 1) + " "+ repr(e))
+                
                 try:
                     myURL.close()
                 except:
@@ -384,11 +384,11 @@ class WeatherBaiduService:
         # 获取城市名称
         f = open('/data/config/city.cfg', 'r')
         info = json.loads(f.read())
-        self.__log.info('info='+ str(info))
+        #self.__log.info('info='+ str(info))
         f.close()
         
         city = info['CITY'] 
-        self.__log.info('city ='+  str(city))
+        #self.__log.info('city ='+  str(city))
         return str(city)
 
     '把unicode字符转化正常字符' 

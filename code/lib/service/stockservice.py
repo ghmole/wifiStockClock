@@ -1,5 +1,5 @@
 from libs.urllib import urequest
-import time
+from time import sleep_ms
 
 import gc
 
@@ -44,16 +44,16 @@ class StockService():
             #my_url='https://web.sqt.gtimg.cn/q=' + code
             #my_url='https://sqt.gtimg.cn/q='+code
             my_url='http://qt.gtimg.cn/q=' + code
-            self.__log.info(my_url)
+            #self.__log.info(my_url)
             my_req = urequest.urlopen(my_url)
 
             # 坏消息micropython 不支持gbk编码
             res = my_req.read(800)#.decode('UTF-8') #抓取约前4W个字符，节省内存。
            
             res=str(res) 
-            self.__log.info(res)
+            #self.__log.info(res)
             gc.collect()
-            time.sleep_ms(50)
+            sleep_ms(50)
             
             for line in res.split(';'):
                 #print line
@@ -62,8 +62,8 @@ class StockService():
                 info = line[12: 100]
                 #print info
                 vargs = info.split('~')
-                self.__log.info(vargs)
-                #print vargs
+                #self.__log.info(vargs)
+ 
                 self.__stock_data.stock_name = vargs[1]
                 self.__stock_data.stock_code = code # vargs[2]
                 if 'sh5' in code  and (float(vargs[3])<1 or float(vargs[4])<1):

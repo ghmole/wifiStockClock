@@ -6,7 +6,8 @@
 说明：编程实现连接路由器，将IP地址等相关信息通过LCD显示（只支持2.4G网络）。
 '''
 # 导入相关模块
-import network,time,json,os,gc
+import network,json,os,gc
+from time import sleep_ms,time
 from libs import ap
 
 
@@ -36,9 +37,9 @@ class MultiWifi:
 
         wlan = network.WLAN(network.STA_IF) #STA模式
         wlan.active(False)
-        time.sleep_ms(10)
+        sleep_ms(10)
         wlan.active(True)                   #激活接口
-        start_time=time.time()              #记录时间做超时判断
+        start_time=time()              #记录时间做超时判断
 
         if not wlan.isconnected():
             self.__log.info('MultiWifi connecting to network ' + ssid)
@@ -71,13 +72,13 @@ class MultiWifi:
                 else:
                     self.__screen.draw_rect(x + 6 * (18 - 4), 187, 6, 7, self.__color.BLACK, 0, self.__color.BLACK)
                     
-                time.sleep_ms(40)
+                sleep_ms(40)
                 
                 index += 1
                 index %= 18
 
                 #超时判断,15秒没连接成功判定为超时
-                if time.time()-start_time > 15 :
+                if time()-start_time > 15 :
                     self.__log.info('MultiWifi  Connected Timeout!')
                     self.__screen.fill(self.__color.BLACK)
                     self.__screen.print_str('WIFI Connected Timeout!', 10, 50, self.__color.RED, self.__color.BLACK, size=1)
@@ -116,7 +117,7 @@ class MultiWifi:
             
         for idx,wifi in enumerate(wifilist):
             info=json.loads(wifi)
-            if info['ssid']==ssid:
+            if info['SSID']==ssid:
                 return idx
         return None
         
@@ -126,13 +127,13 @@ class MultiWifi:
         idx=self.find_wifi_info_in_list(ssid)
         self.__log.info("Multi.add_wifi_info()" +  str(idx))  
         if idx is None:
-            data={'ssid':ssid, 'password':passwd}
+            data={'SSID':ssid, 'PASSWORD':passwd}
             wifi=json.dumps(data)
             wifilist.append(wifi)
             self.write_wifi_list(wifilist)
         else:
             data=json.loads(wifilist[idx])
-            data['password']=passwd
+            data['PASSWORD']=passwd
             wifi=json.dumps(data)
             wifilist[idx]=wifi
             self.write_wifi_list(wifilist)
@@ -164,12 +165,12 @@ class MultiWifi:
             for wifi in wifilist:
                 self.__log.info(wifi)   
                 wificonfig=json.loads(wifi)
-    #             print(wificonfig)
+                # print(wificonfig) 
     #             wdt.feed() #喂狗
-                self.wifi_connect(wificonfig['ssid'],wificonfig['password'])
+                self.wifi_connect(wificonfig['SSID'],wificonfig['PASSWORD'])
                 
                 if wlan.isconnected():
-                    self.__log.info(wificonfig['ssid']+' connected.')
+                    self.__log.info(wificonfig['SSID']+' connected.')
                     gc.collect()
                     return True
         else:
