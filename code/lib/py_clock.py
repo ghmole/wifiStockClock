@@ -400,31 +400,23 @@ class PyClock:
                         
                         self.__log.info( mem_info())
                         #self.__log.info('stack use' + str(stack_use()))
-                        if self.__weatherBean is None:
+                        if second % 55==0:
                             self.__weatherBean  = self.__weather_service.get_weather_bean(self, datetime) # 获取 天气数据
-                        
-                        if self.__weatherWarn is None:
                             self.__weatherWarn  = self.__weather_service.get_weather_warn(self, datetime) # 获取 天气预警
-                            
-                        if self.__calendarBean is None:
                             self.__calendarBean = self.__calendar_service.get_date_info(datetime)         # 获取 日历数据
 
                             
                         #self.__log.info('PyClock.run update_weather_ui')
-                        if self.__weatherBean is not None and \
-                           self.__weatherWarn is not None and \
-                           self.__calendarBean is not None:
-                            self.__clock_weather_ui.refresh(datetime, self.__weatherBean, \
+ 
+                        self.__clock_weather_ui.refresh(datetime, self.__weatherBean, \
                                                             self.__weatherWarn, self.__calendarBean)
 
-                        else:
-                            self.__log.info('invalid data, could not update weatehre_ui')
                         self.__feed_wdt()
-                        gc.collect()
+                       
                     else:
                         pass
-                        gc.collect()
-                    
+                         
+                    gc.collect()
                     # 记录用户选择的UI，下次启动时自动选择显示该UI
                     if (self.__last_change_ui_time != 0):
                         # 切换界面后，如果一分钟没有再切换，就记录当前UI的序号
