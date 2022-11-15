@@ -13,12 +13,12 @@ class Color(object):
     GRAY = (192, 192, 192)
 
     # 空气质量颜色
-#     AQI_YOU = (50, 205, 50)        # 优 
-#     AQI_LIANG = (237, 198, 0)      # 良 
-#     AQI_QINGDU = ORANGE            # 轻度
-#     AQI_ZHONGDU = RED              # 中度
-#     AQI_ZDU = (128, 0, 128)        # 重度
-#     AQI_YANZHONG = (218, 112, 214) # 严重
+    AQI_YOU = (50, 205, 50)        # 优 
+    AQI_LIANG = (237, 198, 0)      # 良 
+    AQI_QINGDU = ORANGE            # 轻度
+    AQI_ZHONGDU = RED              # 中度
+    AQI_ZDU = (128, 0, 128)        # 重度
+    AQI_YANZHONG = (218, 112, 214) # 严重
     
     CL_YOU = (156,202,127)         #优
 #     CL_LIANG = (249,218,101)       #良 

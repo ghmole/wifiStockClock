@@ -9,9 +9,8 @@ gc.collect()
 
 # UI类
 from lib.ui.clock_weather_ui import ClockWeatherUI              # 天气时间UI
-#from lib.ui.clock_weather_win_xp_ui import ClockWeatherWinXpUI  # winxp 天气时间UI
 from lib.ui.clock_stock_ui import ClockStockUI                  # 股票UI
-gc.collect()
+gc.collect() 
 
 # 业务类
 from lib.service.time_service import TimeService                   # 时间
@@ -19,7 +18,7 @@ from lib.service.weather_baidu_service import WeatherBaiduService  # 天气
 #from lib.service.upgrade_service import UpgradeService            # 更新
 from lib.service.calendar_service import CalendarService           # 日历
 from lib.service.stockservice import  StockService                 # 股票
-from lib.service.bluetooth_service import BluetoothService         # 蓝牙
+
 
 from lib.bean.calendar_bean import CalendarBean
 from lib.bean.weather_bean import WeatherBean
@@ -88,8 +87,8 @@ class PyClock:
     '构造方法，初始化数据'
     def __init__(self,
                  log, color,
-                 screen, wifi, led):
-        
+                 screen, wifi, led, bluetooth_service):
+        gc.collect()
         
         self.__log   = log
         self.__color = color
@@ -102,7 +101,7 @@ class PyClock:
         self.__weather_service  = WeatherBaiduService(log)
         self.__calendar_service = CalendarService(log)
         self.__stock_service = StockService(log)
-        #self.__bluetooth_service = BluetoothService("pyClockBLE",log)
+        self.__bluetooth_service = bluetooth_service 
         
         self.__clock_weather_ui = ClockWeatherUI(log, color, screen)
         self.__clock_stock_ui = ClockStockUI(log, color, screen)
@@ -248,11 +247,10 @@ class PyClock:
         
         if (self.__is_use_wdt):
             self.__wdt.feed()
-            gc.collect()
             
     '开始运行'
     def run(self):
-        self.__log.info(__file__ +".run")
+        #self.__log.info(__file__ +".run")
         
         # 连接WiFi
         self.__wifi.multi_wifi_connect()
@@ -291,17 +289,17 @@ class PyClock:
                 # 获取机器的时间
                 datetime = self.__time_service.get_datetime()
                 
-                '''
+                 
                 # 调试用
-                datetime2 = [0,0,0,0,0,0,0,0]
-                for i in range(len(datetime)):
-                    datetime2[i] = datetime[i]
-                
-                datetime2[0] = 2022
-                datetime2[1] = 9
-                datetime2[2] = 10
-                datetime = datetime2
-                '''
+                #datetime2 = [0,0,0,0,0,0,0,0]
+                #for i in range(len(datetime)):
+                #    datetime2[i] = datetime[i]
+                #
+                #datetime2[0] = 2022
+                #datetime2[1] = 9
+                #datetime2[2] = 10
+                #datetime = datetime2
+                 
                 # 秒
                 second = datetime[6]
                 
@@ -340,7 +338,8 @@ class PyClock:
                         
                         self.__last_get_upgrade_hour = hour
                      
-                    gc.collect()
+ 
+
                     
                 elif (self.__ui_index == 0):        # stock ui
                     minute = datetime[5]
@@ -349,7 +348,7 @@ class PyClock:
                         # 初始化股票数据
                         self.init_stock_bean()
                         #self.__stock_bean.check_bean_data()
-                        gc.collect()
+ 
                         self.__last_get_data_minute = minute
                         
                     if second!=self.__last_refresh_ui_second:
@@ -373,7 +372,7 @@ class PyClock:
                                 self.__stock_update_index= (self.__stock_update_index+1) % self.__stock_num
                                 #self.__log.info('PyClock update stock_bean  updat_index='+str(self.__stock_update_index ))
                             #self.__stock_bean.check_bean_data()
-                            gc.collect()
+ 
                             self.__feed_wdt()
                         
                 gc.collect()      
